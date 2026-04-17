@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Meu Plano Alimentar</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;1,9..144,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green: #2D6A4F;
+    --green-light: #52B788;
+    --green-pale: #D8F3DC;
+    --amber: #F4A261;
+    --amber-pale: #FFF3E0;
+    --bg: #F7F4EF;
+    --card: #FFFFFF;
+    --text: #1B1B1B;
+    --text-muted: #6B7280;
+    --border: #E5E0D8;
+    --shadow: 0 2px 12px rgba(0,0,0,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--green);
+    padding: 20px 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 4px;
+  }
+
+  .header-greeting {
+    font-family: 'Fraunces', serif;
+    font-size: 22px;
+    color: white;
+    font-weight: 300;
+    line-height: 1.2;
+  }
+
+  .header-greeting em {
+    font-style: italic;
+    color: var(--green-light);
+  }
+
+  .clock {
+    text-align: right;
+    color: rgba(255,255,255,0.7);
+    font-size: 12px;
+  }
+
+  .clock .time-big {
+    font-size: 20px;
+    font-weight: 500;
+    color: white;
+    display: block;
+    line-height: 1;
+  }
+
+  .nav-tabs {
+    display: flex;
+    gap: 4px;
+    margin-top: 14px;
+  }
+
+  .nav-tab {
+    flex: 1;
+    padding: 10px 4px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 500;
+    color: rgba(255,255,255,0.6);
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: none;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+  }
+
+  .nav-tab.active {
+    color: white;
+    border-bottom-color: var(--green-light);
+  }
+
+  /* MAIN */
+  .main { padding: 16px; }
+
+  /* DAY PILL */
+  .day-banner {
+    background: var(--green-pale);
+    border: 1px solid var(--green-light);
+    border-radius: 12px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .day-banner .icon { font-size: 18px; }
+
+  .day-banner .label {
+    font-size: 11px;
+    color: var(--green);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .day-banner .day-name {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    color: var(--green);
+    font-weight: 600;
+  }
+
+  /* CURRENT MEAL CARD */
+  .current-card {
+    background: var(--green);
+    border-radius: 20px;
+    padding: 18px;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .current-card::before {
+    content: '';
+    position: absolute;
+    top: -30px; right: -30px;
+    width: 120px; height: 120px;
+    background: rgba(255,255,255,0.05);
+    border-radius: 50%;
+  }
+
+  .current-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--green-light);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+
+  .current-badge .dot {
+    width: 6px; height: 6px;
+    background: white;
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .current-meal-name {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    color: white;
+    font-weight: 300;
+    margin-bottom: 2px;
+  }
+
+  .current-meal-time {
+    font-size: 12px;
+    color: rgba(255,255,255,0.6);
+    margin-bottom: 14px;
+  }
+
+  .food-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .food-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+
+  .food-item .food-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  .food-item .food-text {
+    font-size: 13px;
+    color: rgba(255,255,255,0.9);
+    line-height: 1.4;
+  }
+
+  .food-item .food-qty {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--green-light);
+    font-weight: 500;
+    flex-shrink: 0;
+    padding-left: 8px;
+  }
+
+  /* NEXT MEAL */
+  .section-title {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 300;
+    color: var(--text);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .next-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+  }
+
+  .next-meal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+
+  .next-meal-name {
+    font-family: 'Fraunces', serif;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .next-meal-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    background: var(--border);
+    padding: 3px 8px;
+    border-radius: 20px;
+  }
+
+  .next-food-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .next-food-item {
+    font-size: 12.5px;
+    color: var(--text-muted);
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+
+  .next-food-item:last-child { border-bottom: none; }
+  .next-food-item::before { content: '·'; color: var(--green-light); font-size: 18px; line-height: 0; }
+
+  /* ALL MEALS */
+  .meal-row {
+    background: var(--card);
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    cursor: pointer;
+  }
+
+  .meal-row.is-current {
+    border-color: var(--green-light);
+    background: linear-gradient(135deg, #f0fdf4, white);
+  }
+
+  .meal-row-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .meal-row-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .meal-row-title .current-indicator {
+    width: 8px; height: 8px;
+    background: var(--green-light);
+    border-radius: 50%;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  .meal-row-time {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .meal-row-preview {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    line-height: 1.4;
+  }
+
+  .meal-row-body {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+
+  .meal-row-body.open { display: block; }
+
+  .meal-row-body ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .meal-row-body li {
+    font-size: 12.5px;
+    color: var(--text);
+    line-height: 1.4;
+    padding: 4px 0;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    gap: 6px;
+  }
+
+  .meal-row-body li:last-child { border-bottom: none; }
+  .meal-row-body li::before { content: '🌿'; font-size: 12px; flex-shrink: 0; }
+
+  .chevron {
+    transition: transform 0.2s;
+    color: var(--text-muted);
+    font-size: 12px;
+  }
+
+  .meal-row.expanded .chevron { transform: rotate(180deg); }
+
+  /* TIPS */
+  .tip-card {
+    background: var(--amber-pale);
+    border: 1px solid #F4A261;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+    font-size: 12.5px;
+    color: #92400E;
+    line-height: 1.5;
+    display: flex;
+    gap: 8px;
+  }
+
+  .tip-card .tip-icon { font-size: 18px; flex-shrink: 0; }
+
+  /* SHOPPING LIST */
+  .shopping-section { margin-bottom: 16px; }
+
+  .shopping-category {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--green);
+    margin-bottom: 8px;
+    margin-top: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .shopping-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--card);
+    border-radius: 10px;
+    margin-bottom: 6px;
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .shopping-item.checked {
+    opacity: 0.5;
+    background: #f5f5f5;
+  }
+
+  .shopping-item .check-box {
+    width: 20px; height: 20px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .shopping-item.checked .check-box {
+    background: var(--green);
+    border-color: var(--green);
+    color: white;
+    font-size: 11px;
+  }
+
+  .shopping-item .item-name {
+    font-size: 13px;
+    color: var(--text);
+    flex: 1;
+  }
+
+  .shopping-item.checked .item-name {
+    text-decoration: line-through;
+    color: var(--text-muted);
+  }
+
+  .shopping-item .item-qty {
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .reset-btn {
+    width: 100%;
+    margin-top: 16px;
+    padding: 12px;
+    background: none;
+    border: 1.5px dashed var(--border);
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .reset-btn:hover { border-color: var(--green); color: var(--green); }
+
+  /* WATER TRACKER */
+  .water-card {
+    background: linear-gradient(135deg, #E0F2FE, #BAE6FD);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 14px;
+    border: 1px solid #7DD3FC;
+  }
+
+  .water-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: #0369A1;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .water-glasses {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  .water-glass {
+    font-size: 22px;
+    cursor: pointer;
+    transition: transform 0.1s;
+    opacity: 0.3;
+    filter: grayscale(1);
+  }
+
+  .water-glass.filled {
+    opacity: 1;
+    filter: none;
+    transform: scale(1.1);
+  }
+
+  .water-info {
+    font-size: 11px;
+    color: #0369A1;
+    margin-top: 8px;
+  }
+
+  /* NO MEAL */
+  .no-meal {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    border: 1px solid var(--border);
+    margin-bottom: 14px;
+  }
+
+  .no-meal .icon { font-size: 36px; margin-bottom: 8px; }
+  .no-meal .title { font-family: 'Fraunces', serif; font-size: 18px; margin-bottom: 6px; color: var(--text); }
+  .no-meal .subtitle { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* Progress bar week */
+  .week-nav {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+
+  .week-day {
+    flex: 1;
+    padding: 8px 2px;
+    text-align: center;
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    font-size: 10px;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .week-day .wd-letter { font-weight: 600; display: block; font-size: 11px; }
+  .week-day .wd-num { font-size: 13px; font-weight: 500; display: block; margin-top: 2px; color: var(--text); }
+
+  .week-day.today {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .week-day.today .wd-letter, .week-day.today .wd-num { color: white; }
+
+  .week-day.selected:not(.today) {
+    border-color: var(--green-light);
+    background: var(--green-pale);
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-greeting">Olá, <em>Christiano</em> 👋</div>
+      <div style="font-size:11px; color:rgba(255,255,255,0.5); margin-top:2px;">Plano da nutricionista Cecília</div>
+    </div>
+    <div class="clock">
+      <span class="time-big" id="clockTime">--:--</span>
+      <span id="clockDate">---</span>
+    </div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('hoje')">Hoje</button>
+    <button class="nav-tab" onclick="showTab('semana')">Semana</button>
+    <button class="nav-tab" onclick="showTab('compras')">Compras</button>
+    <button class="nav-tab" onclick="showTab('agua')">Água 💧</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- TAB: HOJE -->
+  <div class="tab-content active" id="tab-hoje">
+    <div class="day-banner">
+      <span class="icon">📅</span>
+      <div>
+        <div class="label">Cardápio de hoje</div>
+        <div class="day-name" id="todayDayName">—</div>
+      </div>
+    </div>
+
+    <div id="currentMealSection"></div>
+    <div id="nextMealSection"></div>
+
+    <div class="tip-card">
+      <span class="tip-icon">💡</span>
+      <span>Mastigue muito bem em todas as refeições. Espere 60 min após o almoço para voltar a beber água.</span>
+    </div>
+  </div>
+
+  <!-- TAB: SEMANA -->
+  <div class="tab-content" id="tab-semana">
+    <div class="week-nav" id="weekNav"></div>
+    <div id="allMealsSection"></div>
+  </div>
+
+  <!-- TAB: COMPRAS -->
+  <div class="tab-content" id="tab-compras">
+    <div class="tip-card">
+      <span class="tip-icon">🛒</span>
+      <span>Lista para comprar essa semana. Marque o que já tem em casa!</span>
+    </div>
+    <div id="shoppingList"></div>
+    <button class="reset-btn" onclick="resetShopping()">↺ Resetar lista</button>
+  </div>
+
+  <!-- TAB: ÁGUA -->
+  <div class="tab-content" id="tab-agua">
+    <div class="water-card">
+      <div class="water-title">💧 Copos de água hoje (250ml cada)</div>
+      <div class="water-glasses" id="waterGlasses"></div>
+      <div class="water-info" id="waterInfo"></div>
+    </div>
+    <div class="tip-card">
+      <span class="tip-icon">⚠️</span>
+      <span>Lembre: <strong>espere 60 minutos após o almoço</strong> antes de voltar a beber água.</span>
+    </div>
+    <div class="next-card">
+      <div class="section-title">Meta diária por período</div>
+      <ul class="next-food-list">
+        <li class="next-food-item">Manhã (seg/sex): 1 litro mínimo</li>
+        <li class="next-food-item">Manhã (ter/qua/qui): 1,5 litro mínimo</li>
+        <li class="next-food-item">Durante musculação (seg/sex): 500ml mínimo</li>
+        <li class="next-food-item">Tarde: 1,5 litro mínimo</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== DATA =====
+const DAYS = {
+  // 0=Dom, 1=Seg, 2=Ter, 3=Qua, 4=Qui, 5=Sex, 6=Sab
+  0: 'domingo',
+  1: 'segunda',
+  2: 'terca',
+  3: 'quarta',
+  4: 'quinta',
+  5: 'sexta',
+  6: 'sabado'
+};
+
+const DAY_LABELS = {
+  0: 'Domingo', 1: 'Segunda-feira', 2: 'Terça-feira',
+  3: 'Quarta-feira', 4: 'Quinta-feira', 5: 'Sexta-feira', 6: 'Sábado'
+};
+
+// Returns which group a weekday belongs to
+function getDayGroup(dow) {
+  if (dow === 1 || dow === 5) return 'seg_sex';
+  if (dow === 2 || dow === 3 || dow === 4) return 'ter_qui';
+  if (dow === 6 || dow === 0) return 'fds';
+  return 'fds';
+}
+
+// Meals indexed by group
+const MEAL_PLANS = {
+  seg_sex: [
+    {
+      id: 'desjejum', name: 'Desjejum', time: '06:45', timeMinutes: 6*60+45,
+      icon: '🌅',
+      foods: [
+        { text: 'Shot: suco de ½ limão + 1 col. chá mel de abelha + 2 gotas própolis + 80ml água', icon: '🍋' },
+        { text: 'Maca Peruana cápsula 500mg + Ômega 3: 1 cáp. 1000mg com 220ml de água', icon: '💊' },
+        { text: 'Castanha do Pará: 2 unidades', icon: '🌰' },
+        { text: 'Damasco ou Ameixa preta seca: 2 unidades', icon: '🫐' },
+      ]
+    },
+    {
+      id: 'cafe', name: 'Café da Manhã / Pós-treino', time: 'Após treino', timeMinutes: 8*60,
+      icon: '☕',
+      foods: [
+        { text: 'Mamão: 2 fatias grandes ou ½ haway  OU  Manga: ½ unidade grande', icon: '🥭' },
+        { text: 'Aveia em flocos finos: 1 col. de sopa', icon: '🌾' },
+        { text: 'Café (sem adoçar ou com adoçante): 1 xícara', icon: '☕' },
+        { text: 'Pão de forma integral: 1 fatia', icon: '🍞' },
+        { text: 'Ovos mexidos: 3 un. + 3 pitadas sal + 1 col. sopa de cottage ou creme de ricota light', icon: '🥚' },
+        { text: 'Gergelim preto: 1 col. sopa + orégano, manjericão, cebolinha, palmito, tomate à gosto', icon: '🫒' },
+      ]
+    },
+    {
+      id: 'lanche_manha', name: 'Lanche da Manhã', time: '11:00', timeMinutes: 11*60,
+      icon: '🧃',
+      foods: [
+        { text: 'Suco de uva integral: 50ml (pode diluir em água)', icon: '🍇' },
+        { text: 'Pão de forma integral: 1 fatia', icon: '🍞' },
+        { text: 'Creme de ricota light: 1 col. sopa cheia', icon: '🧀' },
+      ]
+    },
+    {
+      id: 'almoco', name: 'Almoço', time: '13:30', timeMinutes: 13*60+30,
+      icon: '🍽️',
+      foods: [
+        { text: '1 tipo de folha + 2 variedades de legumes (1 pegador cada)', icon: '🥬' },
+        { text: 'Arroz / Milho / Angu / Tabulé: 2 col. grandes cheias (~120g)', icon: '🍚' },
+        { text: 'Feijão / Lentilha / Grão de bico: 1 concha média (~120g)', icon: '🫘' },
+        { text: 'Carnes magras: ~180g', icon: '🥩' },
+        { text: 'Sobremesa: abacaxi 1 fatia grande  OU  laranja/mexerica 1 un.', icon: '🍊' },
+      ],
+      note: 'Prato deve pesar ~500g (460-540g). Mastigar bem!'
+    },
+    {
+      id: 'lanche_tarde', name: 'Lanche da Tarde', time: '18:00', timeMinutes: 18*60,
+      icon: '🥛',
+      foods: [
+        { text: 'Iogurte natural desnatado: 1 copinho (170g)', icon: '🥛' },
+        { text: 'Granola: 2 col. de sopa', icon: '🌾' },
+        { text: 'Uvas passas: 1 col. de sopa', icon: '🍇' },
+      ],
+      note: 'Misture aveia e chia ao iogurte de manhã e deixe na geladeira.'
+    },
+    {
+      id: 'jantar', name: 'Jantar', time: '21:30', timeMinutes: 21*60+30,
+      icon: '🌙',
+      foods: [
+        { text: 'Salada: alface, rúcula, tomate, palmito à vontade', icon: '🥗' },
+        { text: 'Azeite: 1 col. sobremesa + limão e ervas à vontade', icon: '🫒' },
+        { text: 'Frango, peixe ou carne bovina magra: 200g  OU  Salgado proteico: 2 un. (100g cada)', icon: '🍗' },
+        { text: 'Chocolate 85%+ cacau: 20g', icon: '🍫' },
+      ],
+      note: 'Carnes bovinas: patinho, acém ou contra-filé.'
+    },
+  ],
+
+  ter_qui: [
+    {
+      id: 'desjejum', name: 'Desjejum', time: '06:30', timeMinutes: 6*60+30,
+      icon: '🌅',
+      foods: [
+        { text: 'Shot: suco de ½ limão + 1 col. chá mel de abelha + 2 gotas própolis + 80ml água', icon: '🍋' },
+        { text: 'Maca Peruana cápsula 500mg + Ômega 3: 1 cáp. 1000mg com 220ml de água', icon: '💊' },
+        { text: 'Castanha do Pará: 1 unidade', icon: '🌰' },
+      ]
+    },
+    {
+      id: 'cafe', name: 'Café da Manhã', time: '08:00', timeMinutes: 8*60,
+      icon: '☕',
+      foods: [
+        { text: 'Mamão: 2 fatias grandes ou ½ haway  OU  Manga: ½ unidade grande', icon: '🥭' },
+        { text: 'Aveia em flocos finos: 1 col. de sopa', icon: '🌾' },
+        { text: 'Café (sem adoçar ou com adoçante): 1 xícara', icon: '☕' },
+        { text: 'Pão de sal: 1 unidade + Queijo minas frescal: 60g', icon: '🍞' },
+      ]
+    },
+    {
+      id: 'almoco', name: 'Almoço', time: '13:15', timeMinutes: 13*60+15,
+      icon: '🍽️',
+      foods: [
+        { text: '1 tipo de folha + 2 variedades de legumes (1 pegador cada)', icon: '🥬' },
+        { text: 'Arroz / Milho / Angu / Tabulé: 1 col. grande (~60g)', icon: '🍚' },
+        { text: 'Feijão / Lentilha / Grão de bico: ½ concha média (~60g)', icon: '🫘' },
+        { text: 'Carnes magras: ~180g', icon: '🥩' },
+        { text: 'Sobremesa: abacaxi 1 fatia grande  OU  laranja/mexerica 1 un.', icon: '🍊' },
+      ],
+      note: 'Prato deve pesar ~390g (350-430g). Mastigar bem!'
+    },
+    {
+      id: 'lanche_tarde', name: 'Lanche da Tarde', time: '16:30', timeMinutes: 16*60+30,
+      icon: '🥛',
+      foods: [
+        { text: 'Iogurte natural desnatado: 1 copinho (170g)', icon: '🥛' },
+        { text: 'Granola: 3 col. de sopa', icon: '🌾' },
+        { text: 'Uvas passas: 2 col. de sopa', icon: '🍇' },
+      ]
+    },
+    {
+      id: 'lanche_noite', name: 'Lanche da Noite', time: '19:00', timeMinutes: 19*60,
+      icon: '🍎',
+      foods: [
+        { text: 'Castanhas de caju: 6 unidades', icon: '🥜' },
+        { text: 'Maçã: 1 unidade', icon: '🍎' },
+        { text: 'Cranberry: 1 col. de sopa', icon: '🫐' },
+      ]
+    },
+    {
+      id: 'jantar', name: 'Jantar', time: '22:00', timeMinutes: 22*60,
+      icon: '🌙',
+      foods: [], // overridden by day
+      note: ''
+    },
+  ],
+
+  fds: [
+    {
+      id: 'desjejum', name: 'Desjejum', time: 'Ao acordar', timeMinutes: 7*60,
+      icon: '🌅',
+      foods: [
+        { text: 'Shot: suco de ½ limão + 1 col. chá mel de abelha + 2 gotas própolis + 80ml água', icon: '🍋' },
+        { text: 'Maca Peruana cápsula 500mg + Ômega 3: 1 cáp. 1000mg com 220ml de água', icon: '💊' },
+        { text: 'Castanha do Pará: 1 unidade', icon: '🌰' },
+      ]
+    },
+    {
+      id: 'cafe', name: 'Café da Manhã', time: 'Manhã', timeMinutes: 8*60+30,
+      icon: '☕',
+      foods: [
+        { text: 'Mamão: 2 fatias grandes ou ½ haway', icon: '🍈' },
+        { text: 'Café (sem adoçar ou com adoçante, preferir coado): 1 xícara', icon: '☕' },
+        { text: 'Pão de sal: 1 un.  OU  Pão de forma integral: 2 fatias', icon: '🍞' },
+        { text: 'Ovos: 2 un. (mexidos, fritos em antiaderente, omelete ou cozidos)', icon: '🥚' },
+      ]
+    },
+    {
+      id: 'lanche_manha', name: 'Lanche da Manhã', time: 'Manhã', timeMinutes: 10*60+30,
+      icon: '🥜',
+      foods: [
+        { text: 'Castanhas de caju: 4 unidades', icon: '🥜' },
+        { text: 'Maçã ou Pêra: 1 unidade', icon: '🍎' },
+      ]
+    },
+    {
+      id: 'almoco', name: 'Almoço', time: 'Ao meio-dia', timeMinutes: 12*60,
+      icon: '🎉',
+      foods: [
+        { text: 'LIVRE! Desde que não exagere nas quantidades 😄', icon: '🎉' },
+      ]
+    },
+    {
+      id: 'lanche_tarde', name: 'Lanche da Tarde', time: 'Tarde', timeMinutes: 15*60+30,
+      icon: '🍧',
+      foods: [
+        { text: 'Creme de açaí 300ml com frutas e granola  OU', icon: '🍧' },
+        { text: 'Pipoca de panela: 5 copos tipo requeijão + Suco de fruta (caju, acerola, limão ou maracujá): 500ml + Ovo cozido: 1 un.  OU', icon: '🍿' },
+        { text: 'Suco ou café com adoçante + 1 fatia bolo + 1 fatia queijo + 4 pães de queijo pequenos', icon: '☕' },
+      ]
+    },
+    {
+      id: 'lanche_noite', name: 'Lanche da Noite', time: 'Noite', timeMinutes: 19*60+30,
+      icon: '🌙',
+      foods: [], // overridden by day
+    },
+  ]
+};
+
+// Day-specific overrides
+function getMealsForDow(dow) {
+  const group = getDayGroup(dow);
+  let meals = JSON.parse(JSON.stringify(MEAL_PLANS[group]));
+
+  // Jantar específico
+  if (group === 'ter_qui') {
+    const jantar = meals.find(m => m.id === 'jantar');
+    if (dow === 4) { // quinta
+      jantar.foods = [
+        { text: 'Pão de sal: 1 un.  OU  Arroz, Macarrão, Batatas ou Angu: 80g', icon: '🍞' },
+        { text: 'Alface, tomate e outras hortaliças à gosto e à vontade', icon: '🥗' },
+        { text: 'Frango ou Peixe (assado, cozido, grelhado, ensopado ou airfryer): 200g', icon: '🐟' },
+        { text: 'Chocolate 85%+ cacau: 20g', icon: '🍫' },
+      ];
+      jantar.note = '';
+    } else { // ter e qua
+      jantar.foods = [
+        { text: 'Salada: alface, rúcula, tomate, palmito à vontade', icon: '🥗' },
+        { text: 'Azeite: 1 col. sobremesa + limão e ervas à vontade', icon: '🫒' },
+        { text: 'Frango, peixe ou carne bovina magra: 200g  OU  Salgado proteico: 2 un. (100g cada)', icon: '🍗' },
+        { text: 'Chocolate 85%+ cacau: 20g', icon: '🍫' },
+      ];
+    }
+  }
+
+  // Lanche da noite FDS
+  if (group === 'fds') {
+    const ln = meals.find(m => m.id === 'lanche_noite');
+    if (dow === 6) { // sábado
+      ln.foods = [{ text: 'LIVRE! Não exagere nas quantidades 😄', icon: '🎉' }];
+    } else { // domingo = igual quinta
+      ln.foods = [
+        { text: 'Pão de sal: 1 un.  OU  Arroz, Macarrão, Batatas ou Angu: 80g', icon: '🍞' },
+        { text: 'Alface, tomate e outras hortaliças à gosto', icon: '🥗' },
+        { text: 'Frango ou Peixe: 200g', icon: '🐟' },
+        { text: 'Chocolate 85%+ cacau: 20g', icon: '🍫' },
+      ];
+    }
+  }
+
+  return meals;
+}
+
+function getCurrentAndNextMeal(meals, nowMinutes) {
+  let current = null, next = null;
+  for (let i = 0; i < meals.length; i++) {
+    const meal = meals[i];
+    const nextMeal = meals[i + 1];
+    const endMinutes = nextMeal ? nextMeal.timeMinutes : 24 * 60;
+    if (nowMinutes >= meal.timeMinutes && nowMinutes < endMinutes) {
+      current = meal;
+      next = nextMeal || null;
+      break;
+    }
+  }
+  if (!current && nowMinutes < meals[0].timeMinutes) {
+    next = meals[0];
+  }
+  return { current, next };
+}
+
+// ===== RENDER =====
+let selectedDow = new Date().getDay();
+
+function renderHoje() {
+  const now = new Date();
+  const dow = now.getDay();
+  const nowMinutes = now.getHours() * 60 + now.getMinutes();
+  const meals = getMealsForDow(dow);
+  const { current, next } = getCurrentAndNextMeal(meals, nowMinutes);
+
+  document.getElementById('todayDayName').textContent = DAY_LABELS[dow];
+
+  // Current meal
+  const cs = document.getElementById('currentMealSection');
+  if (current) {
+    cs.innerHTML = `
+      <div class="current-card">
+        <div class="current-badge"><span class="dot"></span> Agora</div>
+        <div class="current-meal-name">${current.icon} ${current.name}</div>
+        <div class="current-meal-time">${current.time}</div>
+        <ul class="food-list">
+          ${current.foods.map(f => `
+            <li class="food-item">
+              <span class="food-icon">${f.icon}</span>
+              <span class="food-text">${f.text}</span>
+            </li>
+          `).join('')}
+        </ul>
+        ${current.note ? `<div style="margin-top:10px;font-size:11.5px;color:rgba(255,255,255,0.65);padding:8px;background:rgba(255,255,255,0.08);border-radius:8px;">📌 ${current.note}</div>` : ''}
+      </div>
+    `;
+  } else {
+    cs.innerHTML = `
+      <div class="no-meal">
+        <div class="icon">😴</div>
+        <div class="title">Hora de descansar!</div>
+        <div class="subtitle">Nenhuma refeição programada neste horário. Beba água e descanse bem!</div>
+      </div>
+    `;
+  }
+
+  // Next meal
+  const ns = document.getElementById('nextMealSection');
+  if (next) {
+    ns.innerHTML = `
+      <div class="section-title">⏭ Próxima refeição</div>
+      <div class="next-card">
+        <div class="next-meal-header">
+          <div class="next-meal-name">${next.icon} ${next.name}</div>
+          <div class="next-meal-time">${next.time}</div>
+        </div>
+        <ul class="next-food-list">
+          ${next.foods.map(f => `<li class="next-food-item">${f.text}</li>`).join('')}
+        </ul>
+      </div>
+    `;
+  } else {
+    ns.innerHTML = '';
+  }
+}
+
+function renderSemana() {
+  // Week nav
+  const wn = document.getElementById('weekNav');
+  const today = new Date().getDay();
+  const dayLetters = ['D','S','T','Q','Q','S','S'];
+  const now = new Date();
+  // get monday of current week
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay());
+
+  wn.innerHTML = [0,1,2,3,4,5,6].map(i => {
+    const d = new Date(startOfWeek);
+    d.setDate(startOfWeek.getDate() + i);
+    const dn = d.getDate();
+    const isToday = i === today;
+    const isSelected = i === selectedDow;
+    return `<div class="week-day ${isToday ? 'today' : ''} ${isSelected && !isToday ? 'selected' : ''}" onclick="selectDay(${i})">
+      <span class="wd-letter">${dayLetters[i]}</span>
+      <span class="wd-num">${dn}</span>
+    </div>`;
+  }).join('');
+
+  // Meals for selected day
+  const meals = getMealsForDow(selectedDow);
+  const ms = document.getElementById('allMealsSection');
+  const today2 = new Date().getDay();
+  const nowMin = new Date().getHours()*60 + new Date().getMinutes();
+  const { current } = getCurrentAndNextMeal(meals, nowMin);
+
+  ms.innerHTML = meals.map((meal, idx) => {
+    const isCurrent = selectedDow === today2 && current && current.id === meal.id;
+    return `
+      <div class="meal-row ${isCurrent ? 'is-current' : ''}" id="mrow_${idx}" onclick="toggleRow(${idx})">
+        <div class="meal-row-header">
+          <div class="meal-row-title">
+            ${isCurrent ? '<span class="current-indicator"></span>' : ''}
+            ${meal.icon} ${meal.name}
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div class="meal-row-time">${meal.time}</div>
+            <div class="chevron">▼</div>
+          </div>
+        </div>
+        <div class="meal-row-preview">${meal.foods.slice(0,2).map(f=>f.text).join(' · ')}</div>
+        <div class="meal-row-body" id="mbody_${idx}">
+          <ul>
+            ${meal.foods.map(f => `<li>${f.text}</li>`).join('')}
+            ${meal.note ? `<li style="color:var(--green);font-weight:500;">📌 ${meal.note}</li>` : ''}
+          </ul>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function selectDay(dow) {
+  selectedDow = dow;
+  renderSemana();
+}
+
+function toggleRow(idx) {
+  const row = document.getElementById(`mrow_${idx}`);
+  const body = document.getElementById(`mbody_${idx}`);
+  const isOpen = body.classList.contains('open');
+  // close all
+  document.querySelectorAll('.meal-row-body').forEach(b => b.classList.remove('open'));
+  document.querySelectorAll('.meal-row').forEach(r => r.classList.remove('expanded'));
+  if (!isOpen) {
+    body.classList.add('open');
+    row.classList.add('expanded');
+  }
+}
+
+// ===== SHOPPING LIST =====
+const SHOPPING_ITEMS = [
+  { cat: '🥦 Hortifruti', items: [
+    { name: 'Mamão ou Manga', qty: 'para a semana' },
+    { name: 'Abacaxi', qty: '1 un.' },
+    { name: 'Laranja ou Mexerica', qty: 'para a semana' },
+    { name: 'Maçã', qty: '4-5 un.' },
+    { name: 'Limão', qty: 'para a semana' },
+    { name: 'Alface', qty: '1 pé' },
+    { name: 'Rúcula', qty: '1 pé' },
+    { name: 'Tomate', qty: '4-5 un.' },
+    { name: 'Legumes variados (2 tipos)', qty: 'para almoços' },
+    { name: 'Folha verde (1 tipo/dia)', qty: 'para salada' },
+  ]},
+  { cat: '🥚 Proteínas', items: [
+    { name: 'Ovos', qty: '≥12 un.' },
+    { name: 'Frango (filé ou peito)', qty: '700g-1kg' },
+    { name: 'Peixe ou carne bovina magra', qty: '500g' },
+    { name: 'Queijo minas frescal', qty: '200g' },
+    { name: 'Cottage ou creme de ricota light', qty: '200g' },
+  ]},
+  { cat: '🧀 Laticínios', items: [
+    { name: 'Iogurte natural desnatado', qty: '5-6 copinhos (170g)' },
+  ]},
+  { cat: '🍞 Pães e Grãos', items: [
+    { name: 'Pão de forma integral', qty: '1 pacote' },
+    { name: 'Pão de sal', qty: '4-6 un.' },
+    { name: 'Aveia em flocos finos', qty: '1 pacote' },
+    { name: 'Granola', qty: '1 pacote' },
+    { name: 'Arroz', qty: '1 kg' },
+    { name: 'Feijão, lentilha ou grão de bico', qty: '1 tipo' },
+  ]},
+  { cat: '🥜 Nuts e Sementes', items: [
+    { name: 'Castanha do Pará', qty: '≥14 un.' },
+    { name: 'Castanha de caju', qty: '≥30 un.' },
+    { name: 'Gergelim preto', qty: '1 pacote' },
+    { name: 'Uvas passas', qty: '1 pacote' },
+    { name: 'Damasco ou Ameixa preta seca', qty: '≥14 un.' },
+    { name: 'Cranberry seco', qty: '1 pacote' },
+  ]},
+  { cat: '🫙 Despensa', items: [
+    { name: 'Suco de uva integral', qty: '350ml' },
+    { name: 'Azeite de oliva', qty: '1 frasco' },
+    { name: 'Mel de abelha', qty: '1 frasco' },
+    { name: 'Própolis (gotas)', qty: '1 frasco' },
+    { name: 'Palmito', qty: '1 vidro' },
+    { name: 'Chocolate 85%+ cacau', qty: '3-4 barras (100g)' },
+  ]},
+  { cat: '💊 Suplementos', items: [
+    { name: 'Maca Peruana 500mg', qty: 'reabastecer se precisar' },
+    { name: 'Ômega 3 EPA+DHA 1000mg', qty: 'reabastecer se precisar' },
+  ]},
+];
+
+let checkedItems = JSON.parse(localStorage.getItem('nutri_shopping') || '{}');
+
+function saveChecked() {
+  localStorage.setItem('nutri_shopping', JSON.stringify(checkedItems));
+}
+
+function renderShopping() {
+  const sl = document.getElementById('shoppingList');
+  sl.innerHTML = SHOPPING_ITEMS.map((cat, ci) => `
+    <div class="shopping-section">
+      <div class="shopping-category">${cat.cat}</div>
+      ${cat.items.map((item, ii) => {
+        const key = `${ci}_${ii}`;
+        const checked = checkedItems[key];
+        return `
+          <div class="shopping-item ${checked ? 'checked' : ''}" onclick="toggleItem('${key}', this)">
+            <div class="check-box">${checked ? '✓' : ''}</div>
+            <span class="item-name">${item.name}</span>
+            <span class="item-qty">${item.qty}</span>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `).join('');
+}
+
+function toggleItem(key, el) {
+  checkedItems[key] = !checkedItems[key];
+  saveChecked();
+  renderShopping();
+}
+
+function resetShopping() {
+  if (confirm('Resetar toda a lista de compras?')) {
+    checkedItems = {};
+    saveChecked();
+    renderShopping();
+  }
+}
+
+// ===== WATER =====
+const TOTAL_GLASSES = 14; // ~3.5L
+let waterFilled = parseInt(localStorage.getItem('nutri_water_' + new Date().toDateString()) || '0');
+
+function renderWater() {
+  const wg = document.getElementById('waterGlasses');
+  let html = '';
+  for (let i = 0; i < TOTAL_GLASSES; i++) {
+    html += `<span class="water-glass ${i < waterFilled ? 'filled' : ''}" onclick="toggleWater(${i})">💧</span>`;
+  }
+  wg.innerHTML = html;
+  const ml = waterFilled * 250;
+  document.getElementById('waterInfo').textContent = `${waterFilled} copos = ${ml}ml de ${TOTAL_GLASSES * 250}ml meta diária`;
+}
+
+function toggleWater(idx) {
+  if (waterFilled === idx + 1) {
+    waterFilled = idx;
+  } else {
+    waterFilled = idx + 1;
+  }
+  localStorage.setItem('nutri_water_' + new Date().toDateString(), waterFilled);
+  renderWater();
+}
+
+// ===== TABS =====
+function showTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  event.target.classList.add('active');
+  if (tab === 'semana') renderSemana();
+  if (tab === 'compras') renderShopping();
+  if (tab === 'agua') renderWater();
+}
+
+// ===== CLOCK =====
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('clockTime').textContent = `${h}:${m}`;
+  const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  const months = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  document.getElementById('clockDate').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]}`;
+}
+
+// ===== INIT =====
+updateClock();
+setInterval(updateClock, 30000);
+renderHoje();
+// auto-refresh hoje a cada 5 min
+setInterval(renderHoje, 5 * 60 * 1000);
+</script>
+</body>
+</html>
